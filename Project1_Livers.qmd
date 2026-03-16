@@ -1,0 +1,157 @@
+---
+title: "Project1-Livers"
+author: "Ty'Janae livers"
+format: docx
+editor: visual
+---
+
+# Life Expectancy Trends in Norway Compared With the United States
+
+```{r}
+#install.packages("tidyverse")
+#install.packages("gapminder")
+```
+
+## Loading the Data
+
+```{r}
+
+library(tidyverse)
+
+library(gapminder)
+
+```
+
+```{r}
+data("gapminder")
+```
+
+## Filtering the countries
+
+```{r}
+US_df <- gapminder %>%
+  filter(country == "United States")
+US_df
+
+Norway_df <- gapminder %>%
+  filter(country == "Norway")
+Norway_df
+
+nor_us <- gapminder %>% filter(country %in% c("Norway", "United States"))
+
+```
+
+## Introduction
+
+Life expectancy is a widely used indicator of population health because it reflects the combined effects of economic conditions, healthcare access, social policy, and broader structural factors. Gross Domestic Product (GDP) per capita is often examined alongside life expectancy as a measure of a country’s ability to invest in healthcare systems and public resources. Prior research shows a positive association between income and life expectancy across countries—commonly illustrated by the Preston Curve—but this relationship becomes weaker among high-income nations, suggesting that economic growth alone does not guarantee better health outcomes (Preston, 1975; Deaton, 2003).
+
+A growing body of research highlights the role of socioeconomic inequality in shaping mortality and longevity. Income inequality has been linked to steeper gradients in mortality, particularly in wealthier countries (Wilkinson & Pickett, 2008). Broader socioeconomic conditions, including access to healthcare and social protections, are also associated with differences in health outcomes across populations (Lago et al., 2018; Barakat & Konstantinidis, 2023). Cross-national research further shows that inequality in longevity varies across developed nations, even among those with similar levels of economic development (Lübker & Murtin, 2023). These findings suggest that structural and social factors influence how effectively economic resources translate into improvements in life expectancy.
+
+This study uses secondary longitudinal data from the Gapminder database, which provides internationally comparable indicators on demographic and economic development. The primary outcome examined is life expectancy at birth, measured in years. The key explanatory variable is GDP per capita, measured in constant international dollars and displayed on a log scale for visualization. By comparing trends in these two variables over time, this analysis evaluates how economic prosperity relates to longevity in two high-income countries.
+
+The United States and Norway provide a useful comparison because both are economically developed but differ in levels of inequality and healthcare organization. Research suggests that disparities in healthcare access and broader socioeconomic conditions contribute to differences in mortality outcomes (Gulati et al., 2025). By examining changes in life expectancy and GDP per capita between 1952 and 2007, this study explores whether similar levels of economic development correspond to similar health outcomes. This comparison highlights the importance of structural context in shaping population health among high-income nations.
+
+## Descriptive Exploration
+
+```{r}
+mean_lifeExp <- mean(Norway_df$lifeExp)
+
+sd_lifeExp <- sd(Norway_df$lifeExp)
+
+n_years <- length(unique(Norway_df$year))
+```
+
+Norway has an average life expectancy of approximately `r round(mean(Norway_df$lifeExp), 1)` years across `r length(unique(Norway_df$year))` recorded years, with a standard deviation of `r round(sd(Norway_df$lifeExp), 1)`.
+
+```{r}
+mean_lifeExp <- mean(US_df$lifeExp)
+sd_lifeExp <- sd(US_df$lifeExp)
+n_years <- length(unique(US_df$year))
+```
+
+The United States has an average life expectancy of approximately `r round(mean(US_df$lifeExp), 1)` years across `r length(unique(US_df$year))` recorded years, with a standard deviation of `r round(sd(US_df$lifeExp), 1)`.
+
+### Life Expectancy in Norway Over Time
+
+```{r}
+ggplot(Norway_df, aes(x = year, y = lifeExp)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Life Expectancy Over Time in Norway",
+    x = "Year",
+    y = "Life Expectancy (years)"
+  )
+```
+
+The figure demonstrates a steady and consistent increase in life expectancy in Norway from the early 1950s through the mid-2000s. Life expectancy rises from approximately the low 70s in the 1950s to over 80 years by 2007, reflecting substantial improvements in population health over time. These gains likely correspond to Norway’s long-standing universal, tax-funded healthcare system and strong social welfare policies, which emphasize equitable access to preventive services, maternal and child health programs, and income protections (OECD, 2023; World Health Organization \[WHO\], 2022). Research suggests that comprehensive social policies and reduced income inequality are strongly associated with improved longevity in high-income nations (Dahl & van der Wel, 2013). Overall, the upward trend observed in Norway highlights the role of sustained social investment and universal healthcare coverage in promoting long-term improvements in population health outcomes.\
+
+```{r}
+ggplot(Norway_df, 
+       aes(
+         x = gdpPercap, 
+         y = lifeExp)
+       ) +
+  geom_line() +
+  scale_x_log10() +
+  labs(
+    title = "Life Expectancy vs GDP per Capita in  Norway",
+    x = "GDP per Capita (log scale)",
+    y = "Life Expectancy (years)"
+  )
+```
+
+The graph shows that as GDP per capita increases, life expectancy also tends to rise — especially at lower income levels, where even small gains in GDP per capita are associated with noticeable increases in expected lifespan. This pattern reflects a well‑documented global relationship between economic wealth and health outcomes: wealthier countries generally have better nutrition, healthcare access, sanitation, and education, all of which contribute to longer life spans. The leveling off at very high income levels suggests that after basic health needs are met, additional income yields smaller gains in life expectancy.
+
+### Life Expectancy Over Time in Norway vs United States
+
+```{r}
+
+
+nor_us <- gapminder %>% filter (country %in% c("United States", "Norway"))
+nor_us
+
+ggplot(nor_us, aes(x = year, y = lifeExp, color = country)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Life Expectancy Over Time : Norway vs United States",
+    x = "Year",
+    y = "Life Expectancy (years)",
+    color = "Country"
+  ) 
+nor_us
+
+```
+
+The figure shows that life expectancy increased steadily in both Norway and the United States from 1952 to 2007; however, Norway consistently maintained higher life expectancy throughout the entire period. While both countries experienced overall improvements, the gap between them becomes more noticeable beginning in the 1970s and persists through the early 2000s, with Norway surpassing 80 years by 2007 while the United States remains several years lower. This pattern suggests that although both nations are high-income countries, differences in healthcare systems, social policies, and levels of income inequality may influence how effectively economic resources translate into population health gains. The sustained advantage observed in Norway aligns with research indicating that universal healthcare coverage and stronger social welfare protections are associated with improved longevity in high-income settings.
+
+## Section 4: Data Quality and Limitations
+
+The data used in this analysis, sourced from the Gapminder database, provides a valuable longitudinal perspective but contains specific limitations. The time coverage is restricted to the period between 1952 and 2007, meaning the findings do not reflect recent shifts in global health or policy changes occurring over the last two decades. In terms of missingness, the data set provides observations at five-year intervals, which prevents the identification of short-term fluctuations or specific annual crises. Furthermore, while the data illustrates a relationship between GDP per capita and life expectancy , it cannot account for underlying variables such as specific healthcare spending, cause-of-death statistics, or internal regional disparities within the United States and Norway. This helps build good scientific habits by acknowledging that while the data shows a persistent gap, it does not capture the full complexity of the modern healthcare landscape
+
+## Section 5: Reflection
+
+Exploring this data provided a clear visual representation of how economic prosperity interacts with public health, reinforcing the idea that wealth alone does not dictate longevity. I learned that while both the United States and Norway are high-income nations, Norway’s universal healthcare and social policy structures appear more effective at translating economic resources into sustained health gains. It was surprising to observe that Norway has consistently maintained a higher life expectancy throughout the entire 55-year period , with the divergence becoming even more pronounced starting in the 1970s. This analysis has led me to wonder how internal income inequality affects these national averages, and for a future study, I would like to explore Gini coefficient data to see if higher wealth concentration in the United States correlates with its lower life expectancy relative to Norway
+
+# References
+
+Barakat, C., & Konstantinidis, T. (2023). A review of the relationship between socioeconomic status change and health. *International Journal of Environmental Research and Public Health, 20*(13), 6249.
+
+Beck, K. C., Balaj, M., Donadello, L., et al. (2022). Educational inequalities in adult mortality: A systematic review and meta-analysis. *BMJ Open, 12*(8), e059042.
+
+Deaton, A. (2003). Health, inequality, and economic development. *Journal of Economic Literature, 41*(1), 113–158.
+
+Gulati, I., Kilian, C., Buckley, C., Mulia, N., & Probst, C. (2025). Socioeconomic disparities in healthcare access and implications for all-cause mortality among U.S. adults. *American Journal of Epidemiology*.
+
+Lago, S., Cantarero, D., Rivera, B., et al. (2018). Socioeconomic status, health inequalities and non-communicable diseases: A systematic review. *Journal of Public Health, 26*(1), 1–14.
+
+Lübker, C., & Murtin, F. (2023). Changes in longevity inequality by education among OECD countries. *BMC Public Health, 23*, 1646.
+
+OECD. (2023). *Health at a glance 2023: OECD indicators*. Organisation for Economic Co-operation and Development.
+
+Preston, S. H. (1975). The changing relation between mortality and level of economic development. *Population Studies, 29*(2), 231–248.
+
+Wilkinson, R. G., & Pickett, K. E. (2008). Income inequality and socioeconomic gradients in mortality. *American Journal of Public Health, 98*(4), 699–704.
+
+World Health Organization. (2022). *World health statistics 2022*. World Health Organization.
